@@ -1,34 +1,30 @@
-﻿PrintHeader();
+﻿const int deliveryDays = 3;
 
-string product = GetProductName();
+PrintHeader();
+
+string product = ReadNonEmptyLine( "Введите название товара: " );
 int quantity = GetQuantity();
-string name = GetUserName();
-string address = GetAddress();
+string customerName = ReadNonEmptyLine( "Введите ваше имя: " );
+string address = ReadNonEmptyLine( "Введите адрес доставки: " );
 
-bool isConfirmed = ConfirmOrder( name, product, quantity, address );
+bool isOrderConfirmed = ConfirmOrder( customerName, product, quantity, address );
 
-if ( isConfirmed )
+if ( isOrderConfirmed )
 {
-    DateTime deliveryDate = DateTime.Today.AddDays( 3 );
-    ShowSuccessMessage( name, product, quantity, address, deliveryDate );
+    DateTime deliveryDate = DateTime.Today.AddDays( deliveryDays );
+    ShowSuccessMessage( customerName, product, quantity, address, deliveryDate );
 }
 else
 {
-    ShowCancelMessage( name, product );
+    ShowCancelMessage( customerName, product );
 }
 
 Console.WriteLine( "\nНажмите любую клавишу для выхода..." );
 Console.ReadKey();
 
-string GetProductName()
-{
-    Console.Write( "Введите название товара: " );
-    return ReadNonEmptyLine();
-}
-
 int GetQuantity()
 {
-    int quantity = 0;
+    int quantity;
     Console.Write( "Введите количество товара: " );
     while ( !int.TryParse( Console.ReadLine(), out quantity ) || quantity <= 0 )
     {
@@ -39,49 +35,60 @@ int GetQuantity()
     return quantity;
 }
 
-string GetUserName()
-{
-    Console.Write( "Введите ваше имя: " );
-    return ReadNonEmptyLine();
-}
-
-string GetAddress()
-{
-    Console.Write( "Введите адрес доставки: " );
-    return ReadNonEmptyLine();
-}
-
 void PrintHeader()
 {
     const string header = "=== Оформление заказа ===\n";
     Console.WriteLine( header );
 }
 
-string ReadNonEmptyLine()
+string ReadNonEmptyLine( string prompt )
 {
-    string input;
-    do
+    Console.Write( prompt );
+    string input = "";
+    while ( string.IsNullOrEmpty( input ) )
     {
-        input = Console.ReadLine()?.Trim();
+        input = Console.ReadLine()?.Trim() ?? string.Empty;
         if ( string.IsNullOrWhiteSpace( input ) )
         {
-            Console.Write( "Поле не может быть пустым. Попробуйте снова:" );
+            Console.Write( "Ввод не может быть пустым. Попробуйте снова: " );
         }
-    } while ( string.IsNullOrWhiteSpace( input ) );
+    }
 
     return input;
 }
 
 bool ConfirmOrder( string name, string product, int quantity, string address )
 {
-    HashSet<string> successMsgs = [ "да", "y", "yes" ];
-    Console.WriteLine(
-        $"\nЗдравствуйте, {name}, вы заказали {quantity} {product} на адрес {address}, все верно? (да/нет)" );
-    string response = Console.ReadLine()?.Trim().ToLowerInvariant();
-    return successMsgs.Contains( response );
+    HashSet<string> successAnswers = [ "да", "y", "yes" ];
+    HashSet<string> cancelAnswers = [ "нет", "no", "n" ];
+
+    while ( true )
+    {
+        string response = ReadNonEmptyLine(
+            $"\nЗдравствуйте, {name}, вы заказали {quantity} {product} на адрес {address}, все верно? (да/нет): "
+        );
+
+        if ( successAnswers.Contains( response ) )
+        {
+            return true;
+        }
+
+        if ( cancelAnswers.Contains( response ) )
+        {
+            return false;
+        }
+
+        Console.WriteLine( "Ошибка: введите 'да', 'y', 'yes', 'нет', 'n', 'no'" );
+    }
 }
 
-void ShowSuccessMessage( string name, string product, int quantity, string address, DateTime deliveryDate )
+void ShowSuccessMessage(
+    string name,
+    string product,
+    int quantity,
+    string address,
+    DateTime deliveryDate
+)
 {
     Console.WriteLine(
         $"\n{name}! Ваш заказ {product} в количестве {quantity} оформлен! Ожидайте доставку по адресу {address} к {deliveryDate:dd.MM.yyyy}" );
