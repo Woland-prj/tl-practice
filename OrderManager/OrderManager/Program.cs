@@ -19,21 +19,8 @@ else
     ShowCancelMessage( customerName, product );
 }
 
-Console.WriteLine( "\nНажмите любую клавишу для выхода..." );
+Console.WriteLine( Environment.NewLine, "Нажмите любую клавишу для выхода..." );
 Console.ReadKey();
-
-int GetQuantity()
-{
-    int quantity;
-    Console.Write( "Введите количество товара: " );
-    while ( !int.TryParse( Console.ReadLine(), out quantity ) || quantity <= 0 )
-    {
-        Console.WriteLine( "Ошибка: введите корректное целое число больше 0" );
-        Console.Write( "Введите количество товара: " );
-    }
-
-    return quantity;
-}
 
 void PrintHeader()
 {
@@ -57,7 +44,25 @@ string ReadNonEmptyLine( string prompt )
     return input;
 }
 
-bool ConfirmOrder( string name, string product, int quantity, string address )
+int GetQuantity()
+{
+    int quantity;
+    Console.Write( "Введите количество товара: " );
+    while ( !int.TryParse( Console.ReadLine(), out quantity ) || quantity <= 0 )
+    {
+        Console.WriteLine( "Ошибка: введите корректное целое число больше 0" );
+        Console.Write( "Введите количество товара: " );
+    }
+
+    return quantity;
+}
+
+bool ConfirmOrder(
+    string name,
+    string product,
+    int quantity,
+    string address
+)
 {
     HashSet<string> successAnswers = [ "да", "y", "yes" ];
     HashSet<string> cancelAnswers = [ "нет", "no", "n" ];
@@ -91,10 +96,12 @@ void ShowSuccessMessage(
 )
 {
     Console.WriteLine(
-        $"\n{name}! Ваш заказ {product} в количестве {quantity} оформлен! Ожидайте доставку по адресу {address} к {deliveryDate:dd.MM.yyyy}" );
+        Environment.NewLine,
+        $"{name}! Ваш заказ {product} в количестве {quantity} оформлен! Ожидайте доставку по адресу {address} к {deliveryDate:dd.MM.yyyy}"
+    );
 }
 
 void ShowCancelMessage( string name, string product )
 {
-    Console.WriteLine( $"\n{name}! Ваш заказ {product} отменен" );
+    Console.WriteLine( Environment.NewLine, $"{name}! Ваш заказ {product} отменен" );
 }
