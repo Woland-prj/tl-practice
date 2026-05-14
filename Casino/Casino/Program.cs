@@ -4,7 +4,7 @@ const int winFromNumber = 18;
 const int multiplicator = 25;
 const int simpleDivider = 17;
 
-double ballance = 0;
+double balance = 0;
 bool isGameExit = false;
 
 PrintHeader();
@@ -14,10 +14,17 @@ while ( !isGameExit )
 {
     PrintMenu();
     string option = Console.ReadLine()?.Trim() ?? string.Empty;
-    OptionHandleResult res = HandleOption( option );
-    if ( res != OptionHandleResult.Success )
+    OptionHandleResult result = HandleOption( option );
+    
+    if ( result == OptionHandleResult.Exit )
     {
-        PrintErrorMessage( res );
+        isGameExit = true;
+        continue;
+    }
+    
+    if ( result != OptionHandleResult.Success )
+    {
+        PrintErrorMessage( result );
     }
 }
 
@@ -32,12 +39,12 @@ void SetInitialBalance()
         Console.Write( "Введите корректный баланс: " );
     }
 
-    IncreaseBallance( initialBalance );
+    IncreaseBalance( initialBalance );
 }
 
-OptionHandleResult HandleOption( string opt )
+OptionHandleResult HandleOption( string option )
 {
-    return opt switch
+    return option switch
     {
         "1" => MakeDeposit(),
         "2" => ShowBalance(),
@@ -49,7 +56,7 @@ OptionHandleResult HandleOption( string opt )
 
 OptionHandleResult MakeDeposit()
 {
-    Console.WriteLine( "Введите депозит: " );
+    Console.Write( "Введите депозит: " );
 
     string depositStr = Console.ReadLine()?.Trim() ?? string.Empty;
 
@@ -58,33 +65,33 @@ OptionHandleResult MakeDeposit()
         return OptionHandleResult.InvalidDepositValue;
     }
 
-    OptionHandleResult res = IncreaseBallance( deposit );
+    OptionHandleResult result = IncreaseBalance( deposit );
 
-    if ( res != OptionHandleResult.Success )
+    if ( result != OptionHandleResult.Success )
     {
-        return res;
+        return result;
     }
 
-    Console.WriteLine( $"Баланс успешно пополнен. Текущий баланс: {ballance:F2}" );
+    Console.WriteLine( $"Баланс успешно пополнен. Текущий баланс: {balance:F2}" );
 
     return OptionHandleResult.Success;
 }
 
-OptionHandleResult IncreaseBallance( double deposit )
+OptionHandleResult IncreaseBalance( double deposit )
 {
-    if ( double.MaxValue - deposit < ballance )
+    if ( double.MaxValue - deposit < balance )
     {
         return OptionHandleResult.InvalidDepositValue;
     }
 
-    ballance += deposit;
+    balance += deposit;
 
     return OptionHandleResult.Success;
 }
 
 OptionHandleResult ShowBalance()
 {
-    Console.WriteLine( $"Текущий баланс: {ballance}" );
+    Console.WriteLine( $"Текущий баланс: {balance}" );
 
     return OptionHandleResult.Success;
 }
@@ -98,7 +105,7 @@ OptionHandleResult Play()
         return OptionHandleResult.InvalidBet;
     }
 
-    if ( bet > ballance )
+    if ( bet > balance )
     {
         return OptionHandleResult.NotEnoughBalance;
     }
@@ -108,12 +115,12 @@ OptionHandleResult Play()
     if ( randomNumber >= winFromNumber )
     {
         double winAmount = CalculateWinAmount( bet, randomNumber );
-        ballance += winAmount;
+        balance += winAmount;
         Console.WriteLine( $"Вы выиграли {winAmount:F2}" );
     }
     else
     {
-        ballance -= bet;
+        balance -= bet;
         Console.WriteLine( $"Вы проиграли {bet:F2}" );
     }
 
@@ -125,22 +132,23 @@ double CalculateWinAmount( double bet, int seed )
     Console.WriteLine( $"seed: {seed}" );
     int winPercent = multiplicator * ( seed % simpleDivider );
     Console.WriteLine( $"win percent: {winPercent}" );
-    if ( winPercent < 0 )
-        return 0;
 
-    return bet * ( winPercent / 100.0 );
+    if ( winPercent < 0 )
+    {
+        return 0;
+    }
+
+    return bet * ( 1 + winPercent / 100.0 );
 }
 
 OptionHandleResult Exit()
 {
-    isGameExit = true;
     Console.WriteLine( "Выход из игры..." );
 
-    return OptionHandleResult.Success;
+    return OptionHandleResult.Exit;
 }
 
 void PrintHeader()
-
 {
     Console.WriteLine( "####################" );
     Console.WriteLine( "####   CASINO   ####" );
@@ -157,7 +165,7 @@ void PrintMenu()
         "4. Выйти"
     ];
 
-    foreach ( var option in menuOptions )
+    foreach ( string option in menuOptions )
     {
         Console.WriteLine( option );
     }
@@ -167,33 +175,12 @@ void PrintErrorMessage( OptionHandleResult result )
 {
     string message = result switch
     {
-        OptionHandleResult.InvalidOption =>
-            "Неверный пункт меню",
-
-        OptionHandleResult.InvalidDepositValue =>
-            "Некорректная сумма депозита",
-
-        OptionHandleResult.InvalidBet =>
-            "Некорректная ставка",
-
-        OptionHandleResult.NotEnoughBalance =>
-            "Недостаточно средств",
-
-        _ =>
-            "Произошла ошибка"
+        OptionHandleResult.InvalidOption => "Неверный пункт меню",
+        OptionHandleResult.InvalidDepositValue => "Некорректная сумма депозита",
+        OptionHandleResult.InvalidBet => "Некорректная ставка",
+        OptionHandleResult.NotEnoughBalance => "Недостаточно средств",
+        _ => "Произошла ошибка"
     };
 
     Console.WriteLine( message );
-}
-
-enum OptionHandleResult
-{
-    Success = 0,
-    InvalidOption = 1,
-
-    InvalidDepositValue = 2,
-
-    InvalidBet = 3,
-
-    NotEnoughBalance = 4,
 }
