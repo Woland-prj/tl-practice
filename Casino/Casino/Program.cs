@@ -1,4 +1,6 @@
-﻿const int minRandomNumber = 1;
+﻿using Casino;
+
+const int minRandomNumber = 1;
 const int maxRandomNumber = 20;
 const int winFromNumber = 18;
 const int multiplicator = 25;
@@ -28,6 +30,13 @@ while ( !isGameExit )
     }
 }
 
+void PrintHeader()
+{
+    Console.WriteLine( "####################" );
+    Console.WriteLine( "####   CASINO   ####" );
+    Console.WriteLine( "####################" );
+}
+
 void SetInitialBalance()
 {
     Console.Write( "Введите начальный баланс: " );
@@ -40,6 +49,22 @@ void SetInitialBalance()
     }
 
     IncreaseBalance( initialBalance );
+}
+
+void PrintMenu()
+{
+    List<string> menuOptions =
+    [
+        "1. Пополнить балланс",
+        "2. Показать баланс",
+        "3. Сыграть",
+        "4. Выйти"
+    ];
+
+    foreach ( string option in menuOptions )
+    {
+        Console.WriteLine( option );
+    }
 }
 
 OptionHandleResult HandleOption( string option )
@@ -73,18 +98,6 @@ OptionHandleResult MakeDeposit()
     }
 
     Console.WriteLine( $"Баланс успешно пополнен. Текущий баланс: {balance:F2}" );
-
-    return OptionHandleResult.Success;
-}
-
-OptionHandleResult IncreaseBalance( double deposit )
-{
-    if ( double.MaxValue - deposit < balance )
-    {
-        return OptionHandleResult.InvalidDepositValue;
-    }
-
-    balance += deposit;
 
     return OptionHandleResult.Success;
 }
@@ -133,11 +146,6 @@ double CalculateWinAmount( double bet, int seed )
     int winPercent = multiplicator * ( seed % simpleDivider );
     Console.WriteLine( $"win percent: {winPercent}" );
 
-    if ( winPercent < 0 )
-    {
-        return 0;
-    }
-
     return bet * ( 1 + winPercent / 100.0 );
 }
 
@@ -148,27 +156,16 @@ OptionHandleResult Exit()
     return OptionHandleResult.Exit;
 }
 
-void PrintHeader()
+OptionHandleResult IncreaseBalance( double deposit )
 {
-    Console.WriteLine( "####################" );
-    Console.WriteLine( "####   CASINO   ####" );
-    Console.WriteLine( "####################" );
-}
-
-void PrintMenu()
-{
-    List<string> menuOptions =
-    [
-        "1. Пополнить балланс",
-        "2. Показать баланс",
-        "3. Сыграть",
-        "4. Выйти"
-    ];
-
-    foreach ( string option in menuOptions )
+    if ( double.MaxValue - deposit < balance )
     {
-        Console.WriteLine( option );
+        return OptionHandleResult.InvalidDepositValue;
     }
+
+    balance += deposit;
+
+    return OptionHandleResult.Success;
 }
 
 void PrintErrorMessage( OptionHandleResult result )

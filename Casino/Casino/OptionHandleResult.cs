@@ -1,3 +1,5 @@
+namespace Casino;
+
 enum OptionHandleResult
 {
     Success = 0,
