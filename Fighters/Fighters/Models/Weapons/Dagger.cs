@@ -1,7 +1,9 @@
-namespace Fighters.Models.Weapons
+namespace Fighters.Models.Weapons;
+
+public class Dagger : IWeapon
 {
-    public class Dagger : IWeapon
-    {
-        public int Damage => 3;
-    }
+    public string Name => "Кинжал";
+    public int Damage => 3;
+    public double CriticalChance => 0.25;
+    public int CriticalMultiplier => 2;
 }

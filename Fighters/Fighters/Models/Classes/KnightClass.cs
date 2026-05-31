@@ -1,9 +1,9 @@
-namespace Fighters.Models.Classes
+namespace Fighters.Models.Classes;
+
+public class KnightClass : IClass
 {
-    public class KnightClass : IClass
-    {
-        public int Damage => 2;
-        public int Health => 30;
-        public int Initiative => -1;
-    }
+    public string Name => "Рыцарь";
+    public int Damage => 2;
+    public int Health => 30;
+    public int Initiative => -1;
 }

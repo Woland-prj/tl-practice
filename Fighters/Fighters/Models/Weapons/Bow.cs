@@ -1,7 +1,9 @@
-namespace Fighters.Models.Weapons
+namespace Fighters.Models.Weapons;
+
+public class Bow : IWeapon
 {
-    public class Bow : IWeapon
-    {
-        public int Damage => 4;
-    }
+    public string Name => "Лук";
+    public int Damage => 4;
+    public double CriticalChance => 0.08;
+    public int CriticalMultiplier => 4;
 }

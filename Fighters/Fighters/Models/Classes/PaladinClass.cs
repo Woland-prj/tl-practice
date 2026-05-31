@@ -1,9 +1,9 @@
-namespace Fighters.Models.Classes
+namespace Fighters.Models.Classes;
+
+public class PaladinClass : IClass
 {
-    public class PaladinClass : IClass
-    {
-        public int Damage => 3;
-        public int Health => 24;
-        public int Initiative => 0;
-    }
+    public string Name => "Паладин";
+    public int Damage => 3;
+    public int Health => 24;
+    public int Initiative => 0;
 }

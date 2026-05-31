@@ -3,54 +3,62 @@ using Fighters.Models.Classes;
 using Fighters.Models.Races;
 using Fighters.Models.Weapons;
 
-namespace Fighters.Models.Fighters
+namespace Fighters.Models.Fighters;
+
+public class Fighter : IFighter
 {
-    public class Fighter : IFighter
+    private readonly int _baseCriticalMultiplier = 2;
+    private readonly double _baseCriticalChance = 0.15;
+    private int _currentHealth;
+    public string Name { get; }
+    public IRace Race { get; }
+    public IClass Class { get; }
+    public IArmor Armor { get; }
+    public IWeapon Weapon { get; }
+
+    public double CriticalChance => _baseCriticalChance + Weapon.CriticalChance;
+    public int CriticalMultiplier => _baseCriticalMultiplier + Weapon.CriticalMultiplier;
+
+    public Fighter( string name, IRace race, IClass fighterClass, IArmor armor, IWeapon weapon )
     {
-        private int _currentHealth;
-        public string Name { get; }
-        public IRace Race { get; }
-        public IClass Class { get; }
-        public IArmor Armor { get; set; }
-        public IWeapon Weapon { get; set; }
+        Name = name;
+        Race = race;
+        Class = fighterClass;
+        Armor = armor;
+        Weapon = weapon;
+        _currentHealth = Class.Health + Race.Health;
+    }
 
-        public int MaxHealth { get; }
-
-        public int CurrentHealth { get; private set; }
-
-        public Fighter( string name, IRace race, IClass fighterClass )
+    public void TakeDamage( int damage )
+    {
+        if ( damage > 0 )
         {
-            Name = name;
-            Race = race;
-            Class = fighterClass;
-            Armor = new NoArmor();
-            Weapon = new Fists();
-            MaxHealth = Class.Health + Race.Health;
-            _currentHealth = MaxHealth;
+            _currentHealth -= damage;
         }
 
-        public void TakeDamage( int damage )
+        if ( _currentHealth <= 0 )
         {
-            if ( damage > 0 )
-            {
-                _currentHealth -= damage;
-            }
-
-            if ( _currentHealth <= 0 )
-            {
-                _currentHealth = 0;
-            }
+            _currentHealth = 0;
         }
+    }
 
-        public bool IsAlive()
-        {
-            return _currentHealth > 0;
-        }
+    public bool IsAlive()
+    {
+        return _currentHealth > 0;
+    }
 
-        public FighterStats GetStats() => new(
-            Health: _currentHealth,
-            Damage: Race.Damage + Class.Damage + Weapon.Damage,
-            Armor: Race.Armor + Armor.Armor
-        );
+    public int GetDamage()
+    {
+        return Race.Damage + Class.Damage + Weapon.Damage;
+    }
+
+    public int GetArmor()
+    {
+        return Race.Armor + Armor.Armor;
+    }
+
+    public int GetInitiative()
+    {
+        return Race.Initiative + Class.Initiative;
     }
 }

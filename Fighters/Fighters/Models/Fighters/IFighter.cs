@@ -3,25 +3,21 @@ using Fighters.Models.Classes;
 using Fighters.Models.Races;
 using Fighters.Models.Weapons;
 
-namespace Fighters.Models.Fighters
+namespace Fighters.Models.Fighters;
+
+public interface IFighter
 {
-    public interface IFighter
-    {
-        string Name { get; }
-        IArmor Armor { get; }
-        IWeapon Weapon { get; }
-        IClass Class { get; }
-        IRace Race { get; }
-        int MaxHealth { get; }
+    string Name { get; }
+    IArmor Armor { get; }
+    IWeapon Weapon { get; }
+    IClass Class { get; }
+    IRace Race { get; }
+    double CriticalChance { get; }
+    int CriticalMultiplier { get; }
 
-        void TakeDamage( int damage );
-        bool IsAlive();
-        FighterStats GetStats();
-    }
-
-    public readonly record struct FighterStats(
-        int Health,
-        int Damage,
-        int Armor
-    );
+    void TakeDamage( int damage );
+    bool IsAlive();
+    int GetDamage();
+    int GetArmor();
+    int GetInitiative();
 }

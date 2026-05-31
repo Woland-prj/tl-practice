@@ -1,7 +1,7 @@
-namespace Fighters.Models.Armors
+namespace Fighters.Models.Armors;
+
+public class ClothArmor : IArmor
 {
-    public class ClothArmor : IArmor
-    {
-        public int Armor => 1;
-    }
+    public string Name => "Тканевая одежда";
+    public int Armor => 1;
 }

@@ -1,10 +1,10 @@
-namespace Fighters.Models.Races
+namespace Fighters.Models.Races;
+
+public class DwarfRace : IRace
 {
-    public class DwarfRace : IRace
-    {
-        public int Damage => 1;
-        public int Health => 16;
-        public int Armor => 4;
-        public int Initiative => -1;
-    }
+    public string Name => "Дворф";
+    public int Damage => 1;
+    public int Health => 16;
+    public int Armor => 4;
+    public int Initiative => -1;
 }

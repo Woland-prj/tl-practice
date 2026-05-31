@@ -3,18 +3,12 @@ using Fighters.Models.Classes;
 using Fighters.Models.Races;
 using Fighters.Models.Weapons;
 
-namespace Fighters.GameProcess.FighterCreation
-{
-    public record SelectionOption<T>(
-        string Name,
-        Func<T> CreateFunc
-    );
+namespace Fighters.GameProcess.FighterCreation;
 
-    public interface IFighterVariantsProvider
-    {
-        IReadOnlyList<SelectionOption<IRace>> GetRaces();
-        IReadOnlyList<SelectionOption<IClass>> GetClasses();
-        IReadOnlyList<SelectionOption<IWeapon>> GetWeapons();
-        IReadOnlyList<SelectionOption<IArmor>> GetArmors();
-    }
+public interface IFighterVariantsProvider
+{
+    IReadOnlyDictionary<int, IRace> GetRaces();
+    IReadOnlyDictionary<int, IClass> GetClasses();
+    IReadOnlyDictionary<int, IWeapon> GetWeapons();
+    IReadOnlyDictionary<int, IArmor> GetArmors();
 }

@@ -1,7 +1,7 @@
-namespace Fighters.Models.Armors
+namespace Fighters.Models.Armors;
+
+public class NoArmor : IArmor
 {
-    public class NoArmor : IArmor
-    {
-        public int Armor => 3;
-    }
+    public string Name => "Нет брони";
+    public int Armor => 3;
 }

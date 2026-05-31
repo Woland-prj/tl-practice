@@ -1,7 +1,8 @@
-namespace Fighters.Models.Weapons
+namespace Fighters.Models.Weapons;
+
+public interface IWeapon : INamed
 {
-    public interface IWeapon
-    {
-        int Damage { get; }
-    }
+    int Damage { get; }
+    double CriticalChance { get; }
+    int CriticalMultiplier { get; }
 }

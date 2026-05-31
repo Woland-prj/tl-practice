@@ -1,7 +1,6 @@
-namespace Fighters.Commands
+namespace Fighters.Commands;
+
+public interface ICommand
 {
-    public interface ICommand
-    {
-        void Execute();
-    }
+    void Execute();
 }

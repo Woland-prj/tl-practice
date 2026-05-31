@@ -1,8 +1,8 @@
-namespace Fighters.UI
+namespace Fighters.UI;
+
+public interface IUiService
 {
-    public interface IUiService
-    {
-        void RenderLine( string message );
-        string GetUserInput();
-    }
+    void WriteLine( string message );
+    string ReadLine();
+    int ReadIndex( int max);
 }

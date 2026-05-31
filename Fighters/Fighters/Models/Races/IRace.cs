@@ -1,6 +1,6 @@
 namespace Fighters.Models.Races;
 
-public interface IRace
+public interface IRace : INamed
 {
     int Damage { get; }
     int Health { get; }

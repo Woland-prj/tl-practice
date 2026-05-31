@@ -1,26 +1,31 @@
 using Fighters.GameProcess.Combat;
 using Fighters.GameProcess.FighterCreation;
-using Fighters.Models.Classes;
 using Fighters.Models.Fighters;
-using Fighters.Models.Races;
 using Fighters.UI;
 
-namespace Fighters.Commands
+namespace Fighters.Commands;
+
+public class AddFighterCommand : ICommand
 {
-    public class AddFighterCommand(
-        GameSession session,
-        IUiService ui,
-        IFighterCreationService creation ) : ICommand
+    private readonly GameSession _session;
+    private readonly IUiService _ui;
+    private readonly IFighterFactory _factory;
+
+    public AddFighterCommand( GameSession session, IUiService ui, IFighterFactory factory )
     {
-        public void Execute()
-        {
-            ui.RenderLine( "Создание персонажа:" );
+        _session = session;
+        _ui = ui;
+        _factory = factory;
+    }
 
-            IFighter fighter = creation.Create();
+    public void Execute()
+    {
+        _ui.WriteLine( "Создание персонажа:" );
 
-            session.Fighters.Add( fighter );
+        IFighter fighter = _factory.Create();
 
-            ui.RenderLine( $"Боец {fighter.Name} добавлен." );
-        }
+        _session.Fighters.Add( fighter );
+
+        _ui.WriteLine( $"Боец {fighter.Name} добавлен." );
     }
 }
