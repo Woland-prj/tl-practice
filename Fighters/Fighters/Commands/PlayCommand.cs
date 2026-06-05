@@ -18,12 +18,7 @@ public class PlayCommand : ICommand
 
     public void Execute()
     {
-        if ( _session.Fighters.Count < 2 )
-        {
-            _ui.WriteLine( "Недостаточно бойцов." );
-            return;
-        }
-
-        _gameManager.StartBattle();
+        _gameManager.StartBattle(_session);
+        _session.Fighters.Clear();
     }
 }

@@ -2,10 +2,17 @@ using Fighters.Context;
 
 namespace Fighters.Commands;
 
-public class ExitCommand(ApplicationContext context) : ICommand
+public class ExitCommand : ICommand
 {
+    private readonly ApplicationContext _context;
+
+    public ExitCommand(ApplicationContext context)
+    {
+        _context = context;
+    }
+
     public void Execute()
     {
-        context.Stop();
+        _context.Stop();
     }
 }

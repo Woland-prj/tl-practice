@@ -51,8 +51,7 @@ public class FighterFactory : IFighterFactory
 
         foreach ( KeyValuePair<int, T> option in options )
         {
-            _ui.WriteLine(
-                $"{option.Key} - {option.Value.Name}" );
+            _ui.WriteLine( $"{option.Key} - {option.Value.Name}" );
         }
 
         while ( true )

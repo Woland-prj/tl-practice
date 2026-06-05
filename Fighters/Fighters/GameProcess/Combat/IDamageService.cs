@@ -2,7 +2,7 @@ using Fighters.Models.Fighters;
 
 namespace Fighters.GameProcess.Combat;
 
-public interface IDamageController
+public interface IDamageService
 {
     DamageResult CalculateDamage( IFighter attacker, IFighter defender );
 }

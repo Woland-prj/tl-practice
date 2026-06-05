@@ -1,3 +1,3 @@
 namespace Fighters.GameProcess.Combat;
 
-public record DamageResult( int BaseDamage, int FinalDamage, bool IsCritical );
+public record DamageResult( int Damage, bool IsCritical );

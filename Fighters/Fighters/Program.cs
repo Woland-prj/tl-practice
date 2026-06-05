@@ -14,10 +14,10 @@ IFighterVariantsProvider variantsProvider = new FighterVariantsProvider();
 IFighterFactory factory = new FighterFactory( ui, variantsProvider );
 
 GameSession session = new();
-IDamageController damageController = new DamageController( random );
+IDamageService damageService = new DamageService( random );
 
 ApplicationContext context = new();
-GameManager gameManager = new( session.Fighters, damageController, ui, random );
+GameManager gameManager = new( damageService, ui, random );
 
 Dictionary<string, ICommand> commands = new()
 {
@@ -25,7 +25,7 @@ Dictionary<string, ICommand> commands = new()
     [ "play" ] = new PlayCommand( session, gameManager, ui ),
     [ "exit" ] = new ExitCommand( context )
 };
-CommandDispatcher dispatcher = new( commands );
+CommandDispatcher dispatcher = new( commands, ui );
 
 while ( context.IsRunning )
 {

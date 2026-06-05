@@ -7,8 +7,8 @@ namespace Fighters.Models.Fighters;
 
 public class Fighter : IFighter
 {
-    private readonly int _baseCriticalMultiplier = 2;
-    private readonly double _baseCriticalChance = 0.15;
+    private const int BaseCriticalMultiplier = 2;
+    private const double BaseCriticalChance = 0.15;
     private int _currentHealth;
     public string Name { get; }
     public IRace Race { get; }
@@ -16,8 +16,8 @@ public class Fighter : IFighter
     public IArmor Armor { get; }
     public IWeapon Weapon { get; }
 
-    public double CriticalChance => _baseCriticalChance + Weapon.CriticalChance;
-    public int CriticalMultiplier => _baseCriticalMultiplier + Weapon.CriticalMultiplier;
+    public double CriticalChance => BaseCriticalChance + Weapon.CriticalChance;
+    public int CriticalMultiplier => BaseCriticalMultiplier + Weapon.CriticalMultiplier;
 
     public Fighter( string name, IRace race, IClass fighterClass, IArmor armor, IWeapon weapon )
     {
@@ -42,23 +42,11 @@ public class Fighter : IFighter
         }
     }
 
-    public bool IsAlive()
-    {
-        return _currentHealth > 0;
-    }
+    public bool IsAlive() => _currentHealth > 0;
 
-    public int GetDamage()
-    {
-        return Race.Damage + Class.Damage + Weapon.Damage;
-    }
+    public int GetDamage() => Race.Damage + Class.Damage + Weapon.Damage;
 
-    public int GetArmor()
-    {
-        return Race.Armor + Armor.Armor;
-    }
+    public int GetArmor() => Race.Armor + Armor.Armor;
 
-    public int GetInitiative()
-    {
-        return Race.Initiative + Class.Initiative;
-    }
+    public int GetInitiative() => Race.Initiative + Class.Initiative;
 }

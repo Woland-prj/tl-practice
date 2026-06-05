@@ -3,20 +3,21 @@ using Fighters.Random;
 
 namespace Fighters.GameProcess.Combat;
 
-public class DamageController : IDamageController
+public class DamageService : IDamageService
 {
-    private readonly double _damageRangeMin = -0.20;
-    private readonly double _damageRangeMax = 0.10;
+    private const double DamageRangeMin = -0.20;
+    private const double DamageRangeMax = 0.10;
+    private const int MinDamage = 2;
     private readonly IRandom _random;
 
-    public DamageController( IRandom random )
+    public DamageService( IRandom random )
     {
         _random = random;
     }
 
     public DamageResult CalculateDamage( IFighter attacker, IFighter defender )
     {
-        int baseDamage = Math.Max( attacker.GetDamage() - defender.GetArmor(), 0 );
+        int baseDamage = Math.Max( attacker.GetDamage() - defender.GetArmor(), MinDamage );
 
         bool isCritical = _random.NextDouble() < attacker.CriticalChance;
         if ( isCritical )
@@ -24,13 +25,12 @@ public class DamageController : IDamageController
             baseDamage *= attacker.CriticalMultiplier;
         }
 
-        double variation = _random.NextDouble() * ( _damageRangeMax - _damageRangeMin ) + _damageRangeMin;
+        double variation = _random.NextDouble() * ( DamageRangeMax - DamageRangeMin ) + DamageRangeMin;
         int finalDamage = ( int )Math.Round( baseDamage * ( 1 + variation ) );
         finalDamage = Math.Max( finalDamage, 0 );
 
         return new DamageResult(
-            BaseDamage: baseDamage,
-            FinalDamage: finalDamage,
+            Damage: finalDamage,
             IsCritical: isCritical
         );
     }

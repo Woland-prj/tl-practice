@@ -6,51 +6,67 @@ namespace Fighters.GameProcess.Combat;
 
 public class GameManager
 {
-    private const int _initiativeMin = -2;
-    private const int _initiativeMax = 3;
+    private const int InitiativeMin = -2;
+    private const int InitiativeMax = 3;
 
-    private readonly List<IFighter> _fighters;
-    private readonly IDamageController _damageController;
+    private List<IFighter> _fighters;
+    private readonly IDamageService _damageService;
     private readonly IUiService _ui;
     private readonly IRandom _random;
 
-    private List<IFighter> _turnOrder = [ ];
     private int _currentTurnIndex;
     private int _currentRound = 1;
 
-    public GameManager(
-        List<IFighter> fighters,
-        IDamageController damageController,
-        IUiService ui,
-        IRandom random )
+    public GameManager( IDamageService damageService, IUiService ui, IRandom random )
     {
-        _fighters = fighters;
-        _damageController = damageController;
+        _damageService = damageService;
         _ui = ui;
         _random = random;
     }
 
-    public void StartBattle()
+    public void StartBattle(GameSession session)
     {
-        if ( _fighters.Count < 2 )
+        _fighters = session.Fighters;
+        
+        if ( !HasEnoughAliveFighters() )
         {
-            _ui.WriteLine( "Недостаточно бойцов." );
+            _ui.WriteLine( "Недостаточно бойцов. Необходимо минимум 2 живых бойца, чтобы начать" );
             return;
         }
 
         InitializeTurnOrder();
 
-        RenderBattleStart();
+        _ui.RenderBattleStart();
 
         while ( !IsBattleOver() )
         {
-            ExecuteTurn();
+            PlayRound();
         }
 
-        RenderWinner();
+        _ui.RenderWinner( GetWinner() );
+    }
+    
+    private bool HasEnoughAliveFighters()
+    {
+        return _fighters.Count( fighter => fighter.IsAlive() ) >= 2;
     }
 
-    private void ExecuteTurn()
+    private void InitializeTurnOrder()
+    {
+        _fighters = _fighters
+            .OrderByDescending( fighter => RandomizeInitiative( fighter.GetInitiative() ) )
+            .ToList();
+
+        _currentTurnIndex = 0;
+        _currentRound = 1;
+    }
+
+    private bool IsBattleOver()
+    {
+        return _fighters.Count( fighter => fighter.IsAlive() ) <= 1;
+    }
+
+    private void PlayRound()
     {
         IFighter attacker = GetCurrentFighter();
 
@@ -60,21 +76,44 @@ public class GameManager
         {
             return;
         }
-
-        IFighter defender = targets[ 0 ];
-
-        ProcessAttack( attacker, defender );
+        
+        ProcessAttack( attacker, targets[ 0 ] );
 
         AdvanceTurn();
+
+        if ( IsRoundEnd() )
+        {
+            _currentRound++;
+        }
+    }
+
+    private int RandomizeInitiative( int initiative )
+    {
+        return initiative + _random.Next( InitiativeMin, InitiativeMax );
+    }
+
+    private IFighter GetCurrentFighter()
+    {
+        while ( !_fighters[ _currentTurnIndex ].IsAlive() )
+        {
+            AdvanceTurn();
+        }
+
+        return _fighters[ _currentTurnIndex ];
+    }
+
+    private List<IFighter> GetAliveOpponents( IFighter attacker )
+    {
+        return _fighters.FindAll( fighter => fighter != attacker && fighter.IsAlive() );
     }
 
     private void ProcessAttack( IFighter attacker, IFighter defender )
     {
-        DamageResult result = _damageController.CalculateDamage( attacker, defender );
+        DamageResult result = _damageService.CalculateDamage( attacker, defender );
 
-        defender.TakeDamage( result.FinalDamage );
+        defender.TakeDamage( result.Damage );
 
-        RenderAttack( attacker, defender, result );
+        _ui.RenderAttack( attacker, defender, result, _currentRound );
 
         if ( !defender.IsAlive() )
         {
@@ -82,89 +121,23 @@ public class GameManager
         }
     }
 
-    private void InitializeTurnOrder()
-    {
-        _turnOrder = _fighters
-            .OrderByDescending( fighter => RandomizeInitiative(
-                    fighter.GetInitiative()
-                )
-            )
-            .ToList();
-
-        _currentTurnIndex = 0;
-        _currentRound = 1;
-    }
-
-    private IFighter GetCurrentFighter()
-    {
-        while ( !_turnOrder[ _currentTurnIndex ].IsAlive() )
-        {
-            AdvanceTurn();
-        }
-
-        return _turnOrder[ _currentTurnIndex ];
-    }
-
-    private List<IFighter> GetAliveOpponents( IFighter attacker )
-    {
-        return _fighters
-            .Where( fighter =>
-                fighter != attacker &&
-                fighter.IsAlive()
-            )
-            .ToList();
-    }
-
     private void AdvanceTurn()
     {
         _currentTurnIndex++;
 
-        if ( _currentTurnIndex >= _turnOrder.Count )
+        if ( _currentTurnIndex >= _fighters.Count )
         {
             _currentTurnIndex = 0;
-            _currentRound++;
         }
     }
 
-    private bool IsBattleOver()
+    private bool IsRoundEnd()
     {
-        return _fighters.Count( fighter => fighter.IsAlive() ) <= 1;
+        return _currentTurnIndex == 0;
     }
 
     private IFighter? GetWinner()
     {
         return _fighters.FirstOrDefault( fighter => fighter.IsAlive() );
-    }
-
-    private int RandomizeInitiative( int initiative )
-    {
-        return initiative + _random.Next( _initiativeMin, _initiativeMax );
-    }
-
-    private void RenderBattleStart()
-    {
-        _ui.WriteLine( "Битва начинается!" );
-        _ui.WriteLine( string.Empty );
-    }
-
-    private void RenderAttack( IFighter attacker, IFighter defender, DamageResult result )
-    {
-        string critical = result.IsCritical ? " КРИТ!" : string.Empty;
-
-        _ui.WriteLine(
-            $"[{_currentRound}] " +
-            $"{attacker.Name} наносит " +
-            $"{result.FinalDamage} урона " +
-            $"{defender.Name}" +
-            critical
-        );
-    }
-
-    private void RenderWinner()
-    {
-        IFighter? winner = GetWinner();
-
-        _ui.WriteLine( string.Empty );
-        _ui.WriteLine( $"{winner?.Name} побеждает!" );
     }
 }
