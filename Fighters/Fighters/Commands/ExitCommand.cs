@@ -6,7 +6,7 @@ public class ExitCommand : ICommand
 {
     private readonly ApplicationContext _context;
 
-    public ExitCommand(ApplicationContext context)
+    public ExitCommand( ApplicationContext context )
     {
         _context = context;
     }

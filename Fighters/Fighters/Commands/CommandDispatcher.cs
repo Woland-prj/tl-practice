@@ -7,7 +7,7 @@ public class CommandDispatcher
     private readonly Dictionary<string, ICommand> _commands;
     private readonly IUiService _ui;
 
-    public CommandDispatcher(Dictionary<string, ICommand> commands, IUiService ui)
+    public CommandDispatcher( Dictionary<string, ICommand> commands, IUiService ui )
     {
         _commands = commands;
         _ui = ui;

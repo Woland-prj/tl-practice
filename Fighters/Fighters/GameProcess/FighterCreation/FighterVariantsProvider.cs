@@ -49,7 +49,7 @@ public class FighterVariantsProvider : IFighterVariantsProvider
         };
 
     public IReadOnlyDictionary<int, IRace> GetRaces() => _races;
-    
+
     public IReadOnlyDictionary<int, IClass> GetClasses() => _classes;
 
     public IReadOnlyDictionary<int, IWeapon> GetWeapons() => _weapons;

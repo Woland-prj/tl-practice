@@ -12,53 +12,56 @@ public class GameManager
     private List<IFighter> _fighters;
     private readonly IDamageService _damageService;
     private readonly IUiService _ui;
+    private readonly IGameRenderer _renderer;
     private readonly IRandom _random;
 
     private int _currentTurnIndex;
     private int _currentRound = 1;
 
-    public GameManager( IDamageService damageService, IUiService ui, IRandom random )
+    public GameManager( IDamageService damageService, IUiService ui, IGameRenderer renderer, IRandom random )
     {
         _damageService = damageService;
         _ui = ui;
         _random = random;
+        _renderer = renderer;
     }
 
-    public void StartBattle(GameSession session)
+    public void StartBattle( GameSession session )
     {
         _fighters = session.Fighters;
-        
+
         if ( !HasEnoughAliveFighters() )
         {
             _ui.WriteLine( "Недостаточно бойцов. Необходимо минимум 2 живых бойца, чтобы начать" );
             return;
         }
 
-        InitializeTurnOrder();
+        _currentRound = 1;
 
-        _ui.RenderBattleStart();
+        ShuffleFighters();
+
+        _renderer.RenderBattleStart();
 
         while ( !IsBattleOver() )
         {
             PlayRound();
         }
 
-        _ui.RenderWinner( GetWinner() );
+        _renderer.RenderWinner( GetWinner() );
     }
-    
+
     private bool HasEnoughAliveFighters()
     {
         return _fighters.Count( fighter => fighter.IsAlive() ) >= 2;
     }
 
-    private void InitializeTurnOrder()
+    private void ShuffleFighters()
     {
         _fighters = _fighters
             .OrderByDescending( fighter => RandomizeInitiative( fighter.GetInitiative() ) )
             .ToList();
 
         _currentTurnIndex = 0;
-        _currentRound = 1;
     }
 
     private bool IsBattleOver()
@@ -76,7 +79,7 @@ public class GameManager
         {
             return;
         }
-        
+
         ProcessAttack( attacker, targets[ 0 ] );
 
         AdvanceTurn();
@@ -113,7 +116,7 @@ public class GameManager
 
         defender.TakeDamage( result.Damage );
 
-        _ui.RenderAttack( attacker, defender, result, _currentRound );
+        _renderer.RenderAttack( attacker, defender, result, _currentRound );
 
         if ( !defender.IsAlive() )
         {

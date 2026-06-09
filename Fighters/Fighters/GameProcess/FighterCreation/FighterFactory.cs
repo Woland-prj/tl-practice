@@ -39,7 +39,17 @@ public class FighterFactory : IFighterFactory
     private string RequestName()
     {
         _ui.WriteLine( "Введите имя персонажа:" );
-        return _ui.ReadLine();
+        string name = "";
+        while ( string.IsNullOrEmpty( name ) )
+        {
+            name = _ui.ReadLine().Trim();
+            if ( string.IsNullOrWhiteSpace( name ) )
+            {
+                _ui.WriteLine( "Имя не может быть пустым. Попробуйте снова:" );
+            }
+        }
+
+        return name;
     }
 
     private T SelectOption<T>(
@@ -62,8 +72,6 @@ public class FighterFactory : IFighterFactory
             {
                 return value;
             }
-
-            _ui.WriteLine( "Неверный индекс" );
         }
     }
 }

@@ -18,7 +18,7 @@ public class PlayCommand : ICommand
 
     public void Execute()
     {
-        _gameManager.StartBattle(_session);
+        _gameManager.StartBattle( _session );
         _session.Fighters.Clear();
     }
 }
