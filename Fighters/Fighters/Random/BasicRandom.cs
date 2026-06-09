@@ -2,15 +2,7 @@ namespace Fighters.Random;
 
 public class BasicRandom : IRandom
 {
-    private static readonly System.Random _random = new System.Random();
+    public double NextDouble() => System.Random.Shared.NextDouble();
 
-    public double NextDouble()
-    {
-        return _random.NextDouble();
-    }
-
-    public int Next( int min, int max )
-    {
-        return _random.Next( min, max );
-    }
+    public int Next( int min, int max ) => System.Random.Shared.Next( min, max );
 }
